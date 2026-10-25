@@ -1,6 +1,8 @@
 # Import Python packages
 import streamlit as st
+import os
 import requests
+import pandas as pd
 from snowflake.snowpark.functions import col
 
 # Display the app title
@@ -21,18 +23,16 @@ my_dataframe = (
     session.table("smoothies.public.fruit_options")
     .select(col("FRUIT_NAME"), col("SEARCH_ON"))
 )
-
-# Add these two lines right here:
-st.dataframe(data=my_dataframe, use_container_width=True)
+# Convert the Snowpark DataFrame to a Pandas DataFrame so we can use it
+pd_df = my_dataframe.to_pandas()
+st.dataframe(pd_df)
 st.stop()
 
-# Convert the Snowpark DataFrame to a Pandas DataFrame
-ice_cream_pd = my_dataframe.to_pandas()
 
 # Let the customer select up to 5 fruits
 ingredients_list = st.multiselect(
     "Choose up to 5 ingredients:",
-    ice_cream_pd,
+    pd_df,
     max_selections=5
 )
 

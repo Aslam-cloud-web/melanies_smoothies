@@ -1,65 +1,79 @@
-# Import python packages
+
+# Import Python packages
 import streamlit as st
-import os
 import requests
 from snowflake.snowpark.functions import col
 
-# Write directly to the app
+# Display the app title
 st.title(":cup_with_straw: Customize Your Smoothie! :cup_with_straw:")
 
-st.write(
-    """choose the fruits you want in your custom smoothie!"""
-) 
+st.write("Choose the fruits you want in your custom smoothie!")
 
+# Get the customer's name
+name_on_order = st.text_input("Name on smoothie:")
+st.write("The name of your smoothie will be", name_on_order)
 
-name_on_order = st.text_input('Name on smoothie:')
-st.write("The name of your smoothie will be ", name_on_order)
-
-
+# Connect to Snowflake
 cnx = st.connection("snowflake")
 session = cnx.session()
-my_dataframe = session.table("smoothies.public.fruit_options").select(col('FRUIT_NAME'))
-# st.dataframe(data=my_dataframe, use_container_width=True)
 
-# Convert the Snowpark dataframe to a Pandas dataframe so we can get a list of fruits
+# Get available fruits from Snowflake
+my_dataframe = (
+    session.table("smoothies.public.fruit_options")
+    .select(col("FRUIT_NAME"))
+)
+
+# Convert the Snowpark DataFrame to a Pandas DataFrame
 ice_cream_pd = my_dataframe.to_pandas()
 
+# Let the customer select up to 5 fruits
 ingredients_list = st.multiselect(
-    'Choose up to 5 ingredients:',
-    ice_cream_pd
-    ,max_selections=5
+    "Choose up to 5 ingredients:",
+    ice_cream_pd,
+    max_selections=5
 )
-# 1. Define it first with an empty value
 
-# 1. Define it first with an empty value right here:
-# 1. Define ingredients_string with a default empty value first
-ingredients_string = ''
+# Prepare the ingredients string
+ingredients_string = ""
 
-ingredients_string = ''
-
+# Get nutrition information for each selected fruit
 if ingredients_list:
     for fruit_chosen in ingredients_list:
-        ingredients_string += fruit_chosen + ' '
-        
-        # 1. Use an f-string so it changes dynamically based on the loop item
-        smoothiefroot_response = requests.get(f"https://my.smoothiefroot.com/api/fruit/{fruit_chosen}")
-        
-        # 2. Display the nutrition data for each selected fruit
-        sf_df = st.dataframe(data=smoothiefroot_response.json(), use_container_width=True)
+        ingredients_string += fruit_chosen + " "
 
-    st.write(ingredients_string)
+        # Call the SmoothieFroot API
+        smoothiefroot_response = requests.get(
+            f"https://my.smoothiefroot.com/api/fruit/{fruit_chosen}"
+        )
 
+        # Display the returned data as a table
+        if smoothiefroot_response.ok:
+            sf_df = smoothiefroot_response.json()
 
-# 2. THEN, use it right after in your insert statement
-my_insert_stmt = f"""insert into smoothies.public.orders(ingredients, name_on_order) values ('{ingredients_string}', '{name_on_order}')"""
+            st.dataframe(
+                data=sf_df,
+                use_container_width=True
+            )
+        else:
+            st.error(
+                f"Could not retrieve data for {fruit_chosen}. "
+                f"Status code: {smoothiefroot_response.status_code}"
+            )
+
+    st.write("Selected ingredients:", ingredients_string)
+
+# Prepare the SQL insert statement
+my_insert_stmt = f"""
+INSERT INTO smoothies.public.orders
+(ingredients, name_on_order)
+VALUES ('{ingredients_string}', '{name_on_order}')
+"""
+
 st.write(my_insert_stmt)
 
-time_to_insert = st.button('submit order')
+# Submit the smoothie order
+time_to_insert = st.button("Submit order")
 
 if time_to_insert:
     session.sql(my_insert_stmt).collect()
-    st.success('Your Smoothie is ordered!', icon="✅")
-
-smoothiefroot_response = requests.get("https://my.smoothiefroot.com/api/fruit/watermelon")
-#st.text(smoothiefroot_response.json())
-         sf_df = st.dataframe(data=smoothiefroot_response.json(), use_container_width=True)
+    st.success("Your Smoothie is ordered!", icon="✅")

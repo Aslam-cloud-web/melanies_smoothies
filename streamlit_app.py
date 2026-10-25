@@ -36,21 +36,20 @@ ingredients_list = st.multiselect(
     max_selections=5
 )
 
-# Prepare the ingredients string
-ingredients_string = ""
-
 # Get nutrition information for each selected fruit
 if ingredients_list:
     for fruit_chosen in ingredients_list:
         ingredients_string += fruit_chosen + " "
-
+        
+        # Add these two lines to get the search value
+        search_on = pd_df.loc[pd_df['FRUIT_NAME'] == fruit_chosen, 'SEARCH_ON'].iloc[0]
+        st.write('The search value for ', fruit_chosen, ' is ', search_on, '.')
+        
         # Display a heading for the selected fruit
         st.subheader(fruit_chosen + " Nutrition Information")
-
-        # Call the SmoothieFroot API
-        smoothiefroot_response = requests.get(
-            "https://my.smoothiefroot.com/api/fruit/" + fruit_chosen
-        )
+        
+        # Call the SmoothieFroot API using 'search_on' instead of 'fruit_chosen'
+        smoothiefroot_response = requests.get("https://my.smoothiefroot.com/api/fruit/" + search_on)
 
         # Display the returned data as a table
         if smoothiefroot_response.ok:

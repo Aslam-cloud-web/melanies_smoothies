@@ -1,5 +1,3 @@
-
-
 # Import Python packages
 import streamlit as st
 import requests
@@ -18,11 +16,15 @@ st.write("The name of your smoothie will be", name_on_order)
 cnx = st.connection("snowflake")
 session = cnx.session()
 
-# Get available fruits from Snowflake
+# Get available fruits from Snowflake (Update this line to include SEARCH_ON)
 my_dataframe = (
     session.table("smoothies.public.fruit_options")
-    .select(col("FRUIT_NAME"))
+    .select(col("FRUIT_NAME"), col("SEARCH_ON"))
 )
+
+# Add these two lines right here:
+st.dataframe(data=my_dataframe, use_container_width=True)
+st.stop()
 
 # Convert the Snowpark DataFrame to a Pandas DataFrame
 ice_cream_pd = my_dataframe.to_pandas()

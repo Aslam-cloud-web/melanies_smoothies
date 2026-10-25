@@ -35,12 +35,20 @@ ingredients_list = st.multiselect(
 # 1. Define ingredients_string with a default empty value first
 ingredients_string = ''
 
+ingredients_string = ''
+
 if ingredients_list:
     for fruit_chosen in ingredients_list:
         ingredients_string += fruit_chosen + ' '
-        st.subheader(fruit_chosen + ' Nutrition Information')
-        smoothiefroot_response = requests.get("https://my.smoothiefroot.com/api/fruit/watermelon)
+        
+        # 1. Use an f-string so it changes dynamically based on the loop item
+        smoothiefroot_response = requests.get(f"https://my.smoothiefroot.com/api/fruit/{fruit_chosen}")
+        
+        # 2. Display the nutrition data for each selected fruit
         sf_df = st.dataframe(data=smoothiefroot_response.json(), use_container_width=True)
+
+    st.write(ingredients_string)
+
 
 # 2. THEN, use it right after in your insert statement
 my_insert_stmt = f"""insert into smoothies.public.orders(ingredients, name_on_order) values ('{ingredients_string}', '{name_on_order}')"""
@@ -51,3 +59,7 @@ time_to_insert = st.button('submit order')
 if time_to_insert:
     session.sql(my_insert_stmt).collect()
     st.success('Your Smoothie is ordered!', icon="✅")
+
+smoothiefroot_response = requests.get("https://my.smoothiefroot.com/api/fruit/watermelon")
+#st.text(smoothiefroot_response.json())
+         sf_df = st.dataframe(data=smoothiefroot_response.json(), use_container_width=True)

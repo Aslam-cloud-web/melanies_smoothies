@@ -32,9 +32,10 @@ ingredients_list = st.multiselect(
 # 1. Define it first with an empty value
 
 # 1. Define it first with an empty value right here:
+# 1. Define ingredients_string with a default empty value first
+ingredients_string = ''
+
 if ingredients_list:
-    ingredients_string = ''
-    
     for fruit_chosen in ingredients_list:
         ingredients_string += fruit_chosen + ' '
         st.subheader(fruit_chosen + ' Nutrition Information')

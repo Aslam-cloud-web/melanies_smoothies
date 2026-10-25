@@ -25,8 +25,8 @@ my_dataframe = (
 )
 # Convert the Snowpark DataFrame to a Pandas DataFrame so we can use it
 pd_df = my_dataframe.to_pandas()
-st.dataframe(pd_df)
-st.stop()  
+# st.dataframe(pd_df)
+# st.stop() 
 
 
 # Let the customer select up to 5 fruits
@@ -35,6 +35,8 @@ ingredients_list = st.multiselect(
     pd_df,
     max_selections=5
 )
+# ADD THIS LINE HERE:
+ingredients_string = ""
 
 # Get nutrition information for each selected fruit
 if ingredients_list:

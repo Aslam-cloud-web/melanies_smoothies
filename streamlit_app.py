@@ -26,10 +26,7 @@ my_dataframe = (
 # Convert the Snowpark DataFrame to a Pandas DataFrame so we can use it
 pd_df = my_dataframe.to_pandas()
 st.dataframe(pd_df)
-# Convert the Snowpark DataFrame to a Pandas DataFrame so we can use it
-pd_df = my_dataframe.to_pandas()
-st.dataframe(pd_df)
-# st.stop()  <-- Delete or comment out this line
+st.stop()  
 
 
 # Let the customer select up to 5 fruits

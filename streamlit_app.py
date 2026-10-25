@@ -32,11 +32,13 @@ ingredients_list = st.multiselect(
 # 1. Define it first with an empty value
 
 # 1. Define it first with an empty value right here:
-ingredients_string = ''
-
 if ingredients_list:
+    ingredients_string = ''
+    
     for fruit_chosen in ingredients_list:
         ingredients_string += fruit_chosen + ' '
+        smoothiefroot_response = requests.get("https://my.smoothiefroot.com/api/fruit/watermelon")
+        sf_df = st.dataframe(data=smoothiefroot_response.json(), use_container_width=True)
     st.write(ingredients_string)
 
 # 2. THEN, use it right after in your insert statement

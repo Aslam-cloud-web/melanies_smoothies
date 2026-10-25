@@ -1,4 +1,5 @@
 
+
 # Import Python packages
 import streamlit as st
 import requests
@@ -41,17 +42,18 @@ if ingredients_list:
     for fruit_chosen in ingredients_list:
         ingredients_string += fruit_chosen + " "
 
+        # Display a heading for the selected fruit
+        st.subheader(fruit_chosen + " Nutrition Information")
+
         # Call the SmoothieFroot API
         smoothiefroot_response = requests.get(
-            f"https://my.smoothiefroot.com/api/fruit/{fruit_chosen}"
+            "https://my.smoothiefroot.com/api/fruit/" + fruit_chosen
         )
 
         # Display the returned data as a table
         if smoothiefroot_response.ok:
-            sf_df = smoothiefroot_response.json()
-
-            st.dataframe(
-                data=sf_df,
+            sf_df = st.dataframe(
+                data=smoothiefroot_response.json(),
                 use_container_width=True
             )
         else:

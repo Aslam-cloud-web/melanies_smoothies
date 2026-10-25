@@ -51,7 +51,7 @@ if ingredients_list:
         st.subheader(fruit_chosen + " Nutrition Information")
         
         # Call the SmoothieFroot API using 'search_on' instead of 'fruit_chosen'
-        smoothiefroot_response = requests.get()
+        smoothiefroot_response = requests.get(f"https://my.smoothiefroot.com/api/fruit/{search_on}")
 
         # Display the returned data as a table
         if smoothiefroot_response.ok:

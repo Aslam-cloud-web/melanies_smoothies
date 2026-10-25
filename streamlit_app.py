@@ -1,6 +1,7 @@
 # Import python packages
 import streamlit as st
 import os
+import requests
 from snowflake.snowpark.functions import col
 
 # Write directly to the app
@@ -47,3 +48,10 @@ time_to_insert = st.button('submit order')
 if time_to_insert:
     session.sql(my_insert_stmt).collect()
     st.success('Your Smoothie is ordered!', icon="✅")
+
+# Call the SmoothieFroot API
+smoothiefroot_response = requests.get(
+    "https://my.smoothiefroot.com/api/fruit/watermelon"
+)
+
+st.json(smoothiefroot_response.json())
